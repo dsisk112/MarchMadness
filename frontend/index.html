@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 NCAA Tournament Simulator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>2026 NCAA Tournament Bracket</h1>
+        <p class="subtitle">Browse each round, see AI projections, and highlight predicted winners.</p>
+      </div>
+      <div>
+        <button class="button" id="refreshButton">Refresh predictions</button>
+      </div>
+    </header>
+
+    <div id="status" class="status"></div>
+
+    <nav class="tabs" id="roundTabs"></nav>
+    <section id="roundContent"></section>
+  </main>
+
+  <script>
+    const apiBase = 'http://127.0.0.1:5000';
+    let bracketData = null;
+    let activeRoundIndex = 0;
+
+    const $status = document.getElementById('status');
+    const $tabs = document.getElementById('roundTabs');
+    const $roundContent = document.getElementById('roundContent');
+    const $refresh = document.getElementById('refreshButton');
+
+    function setStatus(text, isError = false) {
+      $status.textContent = text;
+      $status.className = isError ? 'status error' : 'status';
+    }
+
+    async function loadBracket() {
+      setStatus('Loading bracket...');
+      try {
+        const response = await fetch(`${apiBase}/api/bracket?season=2026&start=2026-03-16&end=2026-03-20`);
+        const data = await response.json();
+        if (data.error) {
+          setStatus(`Error: ${data.error}`, true);
+          return;
+        }
+
+        bracketData = data;
+        activeRoundIndex = 0;
+        renderTabs();
+        renderActiveRound();
+        setStatus('Bracket loaded. Select a round to view matchups.');
+      } catch (err) {
+        setStatus(`Error loading bracket: ${err.message}`, true);
+        console.error(err);
+      }
+    }
+
+    function renderTabs() {
+      if (!bracketData?.rounds) return;
+      $tabs.innerHTML = '';
+
+      bracketData.rounds.forEach((round, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `tab ${idx === activeRoundIndex ? 'active' : ''}`;
+        btn.textContent = round.name;
+        btn.onclick = () => {
+          activeRoundIndex = idx;
+          renderTabs();
+          renderActiveRound();
+        };
+        $tabs.appendChild(btn);
+      });
+    }
+
+    function formatTeamCell(team) {
+      if (!team) return 'TBD';
+      const seed = team.seed ? `<span class="badge badge--seed">${team.seed}</span>` : '';
+      const name = team.name || 'TBD';
+      return `${seed} ${name}`;
+    }
+
+    function formatKeyDrivers(metrics) {
+      if (!metrics?.keyDrivers || !metrics.keyDrivers.length) return '<span class="badge badge--prob">No details</span>';
+      // Filter out injury drivers — those are shown in the Injuries column now
+      const filtered = metrics.keyDrivers.filter(d => !d.toLowerCase().includes('injury edge'));
+      if (!filtered.length) return '<span class="badge badge--prob">Seed-based</span>';
+      return filtered.slice(0, 3).map(driver => `<div class="badge badge--prob">${driver}</div>`).join('');
+    }
+
+    function formatWinProb(matchup) {
+      const prob = matchup.metrics?.winProbability;
+      if (prob == null) return '—';
+      const pct = Math.round(prob * 100);
+      const winner = matchup.predictedWinner?.name || '?';
+      return `<span class="win-pct">${pct}%</span>`;
+    }
+
+    function formatInjuryCell(matchup) {
+      const metrics = matchup.metrics || {};
+      const a = metrics.injuriesTeamA;
+      const b = metrics.injuriesTeamB;
+      const teamAName = matchup.teamA?.name || 'Team A';
+      const teamBName = matchup.teamB?.name || 'Team B';
+
+      if (!a?.players?.length && !b?.players?.length) return '<span class="badge badge--healthy">Healthy</span>';
+
+      // Compare raw injury impact to determine who is healthier
+      const aImpact = a?.total_impact || 0;
+      const bImpact = b?.total_impact || 0;
+      const diff = Math.abs(aImpact - bImpact);
+      const adjPct = (diff * 0.5).toFixed(1); // approximate % swing
+
+      let label, cls;
+      if (diff < 1.0) {
+        label = 'Even';
+        cls = 'badge--inj-even';
+      } else if (aImpact < bImpact) {
+        // Team A is healthier (less injury impact)
+        label = `${teamAName} edge`;
+        cls = 'badge--inj-a';
+      } else {
+        // Team B is healthier
+        label = `${teamBName} edge`;
+        cls = 'badge--inj-b';
+      }
+
+      // Build tooltip content
+      let tooltip = '';
+      if (a?.players?.length) {
+        tooltip += `${a.team} (${aImpact.toFixed(1)} impact):\n`;
+        a.players.forEach(p => {
+          tooltip += `  ${p.player} — ${p.status} (${p.injury}), ${p.ppg} PPG/${p.rpg} RPG/${p.apg} APG\n`;
+        });
+      }
+      if (b?.players?.length) {
+        if (tooltip) tooltip += '\n';
+        tooltip += `${b.team} (${bImpact.toFixed(1)} impact):\n`;
+        b.players.forEach(p => {
+          tooltip += `  ${p.player} — ${p.status} (${p.injury}), ${p.ppg} PPG/${p.rpg} RPG/${p.apg} APG\n`;
+        });
+      }
+      const adj = metrics.injuryAdjustment || 0;
+      tooltip += `\nWin % adjustment: ${adj > 0 ? '+' : ''}${(adj * 100).toFixed(1)}%`;
+
+      return `<span class="badge ${cls} injury-hover" title="${tooltip.replace(/"/g, '&quot;')}">${label}</span>`;
+    }
+
+    function renderActiveRound() {
+      if (!bracketData?.rounds?.length) {
+        $roundContent.innerHTML = '<p>No bracket data available.</p>';
+        return;
+      }
+
+      const round = bracketData.rounds[activeRoundIndex];
+      if (!round?.matchups?.length) {
+        $roundContent.innerHTML = '<p>No matchups for this round.</p>';
+        return;
+      }
+
+      const rows = round.matchups.map(matchup => {
+        const winner = matchup.predictedWinner || {};
+        const aIsWinner = (winner.name && winner.name === matchup.teamA?.name)
+                       || (winner.id && winner.id === matchup.teamA?.id);
+        const bIsWinner = (winner.name && winner.name === matchup.teamB?.name)
+                       || (winner.id && winner.id === matchup.teamB?.id);
+        const details = formatKeyDrivers(matchup.metrics);
+        const winProb = formatWinProb(matchup);
+        const injuries = formatInjuryCell(matchup);
+
+        return `
+          <tr>
+            <td class="${aIsWinner ? 'winner' : ''}">${formatTeamCell(matchup.teamA)}</td>
+            <td class="${bIsWinner ? 'winner' : ''}">${formatTeamCell(matchup.teamB)}</td>
+            <td class="col-prob">${winProb}</td>
+            <td class="col-injury">${injuries}</td>
+            <td>${details}</td>
+          </tr>
+        `;
+      }).join('');
+
+      $roundContent.innerHTML = `
+        <div class="table-container">
+          <h2>${round.name}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Team A</th>
+                <th>Team B</th>
+                <th>Win %</th>
+                <th>Injuries</th>
+                <th>Prediction Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    $refresh.addEventListener('click', () => loadBracket());
+
+    loadBracket();
+  </script>
+</body>
+</html>

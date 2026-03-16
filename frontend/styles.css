@@ -1,0 +1,241 @@
+/* Modern responsive styling for the bracket UI */
+:root {
+  --bg: #12151f;
+  --card: #1e2333;
+  --panel: #1a1f2f;
+  --text: #e6ebff;
+  --muted: #a1a8c0;
+  --accent: #3fa9f5;
+  --success: #2d7a4b;
+  --danger: #d94f4f;
+  --border: rgba(255, 255, 255, 0.12);
+  --radius: 12px;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top, #1f2a44 0%, #0a0d17 80%);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.3rem;
+  letter-spacing: 0.02em;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+  color: var(--accent);
+}
+
+p.subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 600px;
+}
+
+.button {
+  background: linear-gradient(135deg, var(--accent), #60c9ff);
+  border: 0;
+  border-radius: var(--radius);
+  color: #0a1022;
+  padding: 11px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  opacity: 0.96;
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.tab.active {
+  background: rgba(63, 169, 245, 0.18);
+  border-color: rgba(63, 169, 245, 0.45);
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 28px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+thead {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+th {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+td {
+  font-size: 0.95rem;
+}
+
+.winner {
+  background: rgba(46, 200, 124, 0.18);
+  color: #c8ffe1;
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.badge--seed {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.badge--prob {
+  color: rgba(147, 245, 255, 0.9);
+  margin-bottom: 4px;
+}
+
+.status {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+}
+
+.status.error {
+  border-color: rgba(217, 79, 79, 0.5);
+}
+
+.status.error strong {
+  color: var(--danger);
+}
+
+/* Win probability column */
+.col-prob {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.win-pct {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #7be0a8;
+}
+
+/* Injury column */
+.col-injury {
+  white-space: nowrap;
+}
+
+.badge--healthy {
+  color: #7be0a8;
+  background: rgba(46, 200, 124, 0.12);
+  border-color: rgba(46, 200, 124, 0.25);
+}
+
+.badge--inj-even {
+  color: var(--muted);
+}
+
+.badge--inj-a {
+  color: #7be0a8;
+  background: rgba(46, 200, 124, 0.12);
+  border-color: rgba(46, 200, 124, 0.25);
+}
+
+.badge--inj-b {
+  color: #f5c542;
+  background: rgba(245, 197, 66, 0.12);
+  border-color: rgba(245, 197, 66, 0.25);
+}
+
+.injury-hover {
+  cursor: help;
+  position: relative;
+}
+
+.injury-hover:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 700px) {
+  th, td {
+    padding: 10px 10px;
+  }
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

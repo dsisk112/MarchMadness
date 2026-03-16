@@ -1,0 +1,501 @@
+{
+  "source": "covers.com",
+  "snapshot_date": "2025-03-10",
+  "description": "NCAA Tournament 2026 team injury report snapshot",
+  "teams": {
+    "Duke": {
+      "seed": 1,
+      "region": "East",
+      "injuries": [
+        { "player": "C. Foster", "position": "G", "status": "Out", "injury": "Foot", "updated": "2025-03-09" },
+        { "player": "P. Ngongba II", "position": "C", "status": "Out", "injury": "Undisclosed", "updated": "2025-03-05" },
+        { "player": "I. Ufochukwu", "position": "C", "status": "Out", "injury": "Undisclosed", "updated": "2024-12-29" },
+        { "player": "S. Wilkins", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2024-11-09" }
+      ]
+    },
+    "Siena": {
+      "seed": 16,
+      "region": "East",
+      "injuries": [
+        { "player": "A. Chandler", "position": "F", "status": "Questionable", "injury": "Personal", "updated": "2025-02-26" },
+        { "player": "T. Jones", "position": "F", "status": "Questionable", "injury": "Back", "updated": "2025-01-03" },
+        { "player": "T. Goodrick", "position": "F", "status": "Out", "injury": "Knee", "updated": "2025-01-01" },
+        { "player": "O. Schlager", "position": "G", "status": "Questionable", "injury": "Upper Body", "updated": "2024-12-04" },
+        { "player": "R. Ducharme", "position": "G", "status": "Questionable", "injury": "Shoulder", "updated": "2024-11-02" }
+      ]
+    },
+    "Ohio State": {
+      "seed": 8,
+      "region": "East",
+      "injuries": [
+        { "player": "P. Johnson", "position": "G", "status": "Questionable", "injury": "Lower Leg", "updated": "2025-03-03" },
+        { "player": "B. Noel", "position": "F", "status": "Questionable", "injury": "Foot", "updated": "2025-01-06" },
+        { "player": "M. Herro", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2024-11-06" },
+        { "player": "J. Ojianwuna", "position": "F", "status": "Questionable", "injury": "Knee", "updated": "2024-10-27" }
+      ]
+    },
+    "TCU": {
+      "seed": 9,
+      "region": "East",
+      "injuries": [
+        { "player": "M. Diallo", "position": "C", "status": "Out", "injury": "Knee", "updated": "2024-11-03" }
+      ]
+    },
+    "St. John's": {
+      "seed": 5,
+      "region": "East",
+      "injuries": [
+        { "player": "K. Odih", "position": "G", "status": "Questionable", "injury": "Leg", "updated": "2025-02-20" },
+        { "player": "C. Pohto", "position": "G", "status": "Out", "injury": "Hip", "updated": "2024-12-08" },
+        { "player": "I. Suljanovic", "position": "F", "status": "Out", "injury": "Knee", "updated": "2024-10-16" }
+      ]
+    },
+    "Northern Iowa": {
+      "seed": 12,
+      "region": "East",
+      "injuries": [
+        { "player": "C. Courbat", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-02-24" },
+        { "player": "M. Dubravcic", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-06" }
+      ]
+    },
+    "Kansas": {
+      "seed": 4,
+      "region": "East",
+      "injuries": []
+    },
+    "Cal Baptist": {
+      "seed": 13,
+      "region": "East",
+      "injuries": []
+    },
+    "Louisville": {
+      "seed": 6,
+      "region": "East",
+      "injuries": [
+        { "player": "M. Brown Jr.", "position": "G", "status": "Out", "injury": "Back", "updated": "2025-02-26" }
+      ]
+    },
+    "South Florida": {
+      "seed": 11,
+      "region": "East",
+      "injuries": [
+        { "player": "D. Green", "position": "F", "status": "Out", "injury": "Achilles", "updated": "2025-01-03" },
+        { "player": "X. Brown", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2025-01-03" }
+      ]
+    },
+    "Michigan State": {
+      "seed": 3,
+      "region": "East",
+      "injuries": [
+        { "player": "D. Ugochukwu", "position": "G", "status": "Out", "injury": "Foot", "updated": "2025-02-04" },
+        { "player": "K. Glenn", "position": "F", "status": "Out", "injury": "Knee", "updated": "2024-06-17" }
+      ]
+    },
+    "North Dakota State": {
+      "seed": 14,
+      "region": "East",
+      "injuries": []
+    },
+    "UCLA": {
+      "seed": 7,
+      "region": "East",
+      "injuries": [
+        { "player": "E. Manjikian", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-16" }
+      ]
+    },
+    "UCF": {
+      "seed": 10,
+      "region": "East",
+      "injuries": [
+        { "player": "J. Foumena", "position": "C", "status": "Questionable", "injury": "Ankle", "updated": "2025-02-27" },
+        { "player": "T. Jones", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2025-01-01" }
+      ]
+    },
+    "UConn": {
+      "seed": 2,
+      "region": "East",
+      "injuries": [
+        { "player": "J. Stewart", "position": "F", "status": "Out", "injury": "Knee", "updated": "2025-02-24" }
+      ]
+    },
+    "Furman": {
+      "seed": 15,
+      "region": "East",
+      "injuries": []
+    },
+    "Florida": {
+      "seed": 1,
+      "region": "South",
+      "injuries": []
+    },
+    "Prairie View A&M": {
+      "seed": 16,
+      "region": "South",
+      "injuries": []
+    },
+    "Lehigh": {
+      "seed": 16,
+      "region": "South",
+      "injuries": []
+    },
+    "Clemson": {
+      "seed": 8,
+      "region": "South",
+      "injuries": [
+        { "player": "T. Steinour", "position": "F-C", "status": "Out", "injury": "Undisclosed", "updated": "2025-02-19" },
+        { "player": "Z. Foster", "position": "G", "status": "Out", "injury": "Knee", "updated": "2024-12-15" }
+      ]
+    },
+    "Iowa": {
+      "seed": 9,
+      "region": "South",
+      "injuries": [
+        { "player": "P. McCollum", "position": "G", "status": "Out", "injury": "Foot", "updated": "2025-01-10" }
+      ]
+    },
+    "Vanderbilt": {
+      "seed": 5,
+      "region": "South",
+      "injuries": [
+        { "player": "G. Kimble III", "position": "G", "status": "Out", "injury": "Knee", "updated": "2024-06-04" }
+      ]
+    },
+    "McNeese": {
+      "seed": 12,
+      "region": "South",
+      "injuries": []
+    },
+    "Nebraska": {
+      "seed": 4,
+      "region": "South",
+      "injuries": [
+        { "player": "U. Jarusevicius", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-09" },
+        { "player": "C. Essegian", "position": "G", "status": "Out", "injury": "Ankle", "updated": "2024-11-28" },
+        { "player": "H. Burt", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2024-11-02" }
+      ]
+    },
+    "Troy": {
+      "seed": 13,
+      "region": "South",
+      "injuries": []
+    },
+    "North Carolina": {
+      "seed": 6,
+      "region": "South",
+      "injuries": [
+        { "player": "C. Wilson", "position": "F", "status": "Out", "injury": "Thumb", "updated": "2025-02-10" },
+        { "player": "J. Brown", "position": "C", "status": "Out", "injury": "Foot", "updated": "2025-01-19" },
+        { "player": "I. Matlekovic", "position": "C", "status": "Questionable", "injury": "Hand", "updated": "2025-01-15" }
+      ]
+    },
+    "VCU": {
+      "seed": 11,
+      "region": "South",
+      "injuries": [
+        { "player": "O. Okafor", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-02-10" },
+        { "player": "C. Fermin", "position": "F", "status": "Out", "injury": "Personal", "updated": "2024-11-21" }
+      ]
+    },
+    "Illinois": {
+      "seed": 3,
+      "region": "South",
+      "injuries": [
+        { "player": "J. Jakstys", "position": "C", "status": "Out", "injury": "Undisclosed", "updated": "2025-02-17" },
+        { "player": "T. Rodgers", "position": "G", "status": "Questionable", "injury": "Knee", "updated": "2024-10-12" }
+      ]
+    },
+    "Penn": {
+      "seed": 14,
+      "region": "South",
+      "injuries": [
+        { "player": "D. Williams", "position": "G", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-04" },
+        { "player": "R. Altman", "position": "G", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-04" }
+      ]
+    },
+    "Saint Mary's": {
+      "seed": 7,
+      "region": "South",
+      "injuries": [
+        { "player": "K. Gad", "position": "F", "status": "Out", "injury": "Shoulder", "updated": "2024-12-14" }
+      ]
+    },
+    "Texas A&M": {
+      "seed": 10,
+      "region": "South",
+      "injuries": [
+        { "player": "N. Mundey", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2025-01-15" },
+        { "player": "M. Mgbako", "position": "F", "status": "Out", "injury": "Foot", "updated": "2024-12-28" }
+      ]
+    },
+    "Houston": {
+      "seed": 2,
+      "region": "South",
+      "injuries": [
+        { "player": "K. Jefferson", "position": "G", "status": "Out", "injury": "Knee", "updated": "2025-01-02" },
+        { "player": "B. Jackson", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2024-12-08" }
+      ]
+    },
+    "Idaho": {
+      "seed": 15,
+      "region": "South",
+      "injuries": []
+    },
+    "Arizona": {
+      "seed": 1,
+      "region": "West",
+      "injuries": [
+        { "player": "B. James", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2025-02-02" }
+      ]
+    },
+    "LIU": {
+      "seed": 16,
+      "region": "West",
+      "injuries": []
+    },
+    "Villanova": {
+      "seed": 8,
+      "region": "West",
+      "injuries": [
+        { "player": "M. Hodge", "position": "F", "status": "Out", "injury": "Knee", "updated": "2025-02-27" }
+      ]
+    },
+    "Utah State": {
+      "seed": 9,
+      "region": "West",
+      "injuries": []
+    },
+    "Wisconsin": {
+      "seed": 5,
+      "region": "West",
+      "injuries": [
+        { "player": "N. Winter", "position": "F", "status": "Questionable", "injury": "Lower Body", "updated": "2025-03-04" },
+        { "player": "J. Janicki", "position": "G", "status": "Questionable", "injury": "Wrist", "updated": "2025-02-24" }
+      ]
+    },
+    "High Point": {
+      "seed": 12,
+      "region": "West",
+      "injuries": []
+    },
+    "Arkansas": {
+      "seed": 4,
+      "region": "West",
+      "injuries": [
+        { "player": "K. Knox", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-02-16" }
+      ]
+    },
+    "Hawaii": {
+      "seed": 13,
+      "region": "West",
+      "injuries": [
+        { "player": "A. Hunkin-Claytor", "position": "G", "status": "Out", "injury": "Toe", "updated": "2025-02-06" },
+        { "player": "T. Cuff", "position": "G", "status": "Out", "injury": "Knee", "updated": "2024-11-17" }
+      ]
+    },
+    "BYU": {
+      "seed": 6,
+      "region": "West",
+      "injuries": [
+        { "player": "R. Saunders", "position": "G", "status": "Out", "injury": "Knee", "updated": "2025-02-14" },
+        { "player": "X. Staton", "position": "C", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-12" },
+        { "player": "K. Perry", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2025-01-01" },
+        { "player": "D. Baker", "position": "G", "status": "Out", "injury": "Knee", "updated": "2024-11-30" },
+        { "player": "N. Pickens", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2024-11-07" },
+        { "player": "B. Kozlowski", "position": "F", "status": "Out", "injury": "Redshirt", "updated": "2024-11-02" }
+      ]
+    },
+    "Texas": {
+      "seed": 11,
+      "region": "West",
+      "injuries": [
+        { "player": "L. Traore", "position": "F", "status": "Out", "injury": "Undisclosed", "updated": "2025-02-12" }
+      ]
+    },
+    "NC State": {
+      "seed": 11,
+      "region": "West",
+      "injuries": [
+        { "player": "J. Deng", "position": "F", "status": "Out", "injury": "Redshirt", "updated": "2025-01-25" },
+        { "player": "C. Langdon", "position": "F", "status": "Out", "injury": "Undisclosed", "updated": "2025-01-25" }
+      ]
+    },
+    "Gonzaga": {
+      "seed": 3,
+      "region": "West",
+      "injuries": [
+        { "player": "B. Huff", "position": "F", "status": "Out", "injury": "Knee", "updated": "2025-01-14" }
+      ]
+    },
+    "Kennesaw State": {
+      "seed": 14,
+      "region": "West",
+      "injuries": [
+        { "player": "D. Washington III", "position": "G", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-03-04" },
+        { "player": "B. Tousignaut", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2025-01-16" },
+        { "player": "C. Clemmons", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2024-12-16" },
+        { "player": "D. Cosby Jr.", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2024-07-12" }
+      ]
+    },
+    "Miami": {
+      "seed": 7,
+      "region": "West",
+      "injuries": [
+        { "player": "T. Malovec", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-03-03" },
+        { "player": "T. Maddox", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2024-12-28" },
+        { "player": "M. Allen", "position": "G", "status": "Out", "injury": "Illness", "updated": "2024-12-01" }
+      ]
+    },
+    "Missouri": {
+      "seed": 10,
+      "region": "West",
+      "injuries": [
+        { "player": "A. Boateng", "position": "G", "status": "Out", "injury": "Leg", "updated": "2025-01-30" },
+        { "player": "J. Porter", "position": "F", "status": "Questionable", "injury": "Lower Leg", "updated": "2024-12-21" }
+      ]
+    },
+    "Purdue": {
+      "seed": 2,
+      "region": "West",
+      "injuries": []
+    },
+    "Queens": {
+      "seed": 15,
+      "region": "West",
+      "injuries": []
+    },
+    "Michigan": {
+      "seed": 1,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "L. Cason", "position": "G", "status": "Out", "injury": "Knee", "updated": "2025-02-27" },
+        { "player": "W. Grady", "position": "G", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-22" },
+        { "player": "R. Liburd", "position": "G", "status": "Out", "injury": "Redshirt", "updated": "2024-07-08" }
+      ]
+    },
+    "UMBC": {
+      "seed": 16,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Howard": {
+      "seed": 16,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Georgia": {
+      "seed": 8,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Saint Louis": {
+      "seed": 9,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "K. Anya", "position": "F", "status": "Out", "injury": "Redshirt", "updated": "2024-10-22" }
+      ]
+    },
+    "Texas Tech": {
+      "seed": 5,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "J. Toppin", "position": "F", "status": "Out", "injury": "Knee", "updated": "2025-02-17" },
+        { "player": "L. Hoover", "position": "F", "status": "Out", "injury": "Redshirt", "updated": "2025-01-01" }
+      ]
+    },
+    "Akron": {
+      "seed": 12,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Alabama": {
+      "seed": 4,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "K. Bristow", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-12" },
+        { "player": "D. Hannah", "position": "G", "status": "Questionable", "injury": "Undisclosed", "updated": "2024-12-28" },
+        { "player": "C. Onyejiaka", "position": "C", "status": "Out", "injury": "Undisclosed", "updated": "2024-12-28" }
+      ]
+    },
+    "Hofstra": {
+      "seed": 13,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Tennessee": {
+      "seed": 6,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "N. Ament", "position": "F", "status": "Questionable", "injury": "Leg", "updated": "2025-03-05" },
+        { "player": "C. Phillips", "position": "F", "status": "Out", "injury": "Shoulder", "updated": "2024-12-07" }
+      ]
+    },
+    "Miami (OH)": {
+      "seed": 11,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "E. Ipsaro", "position": "G", "status": "Out", "injury": "Knee", "updated": "2024-12-21" }
+      ]
+    },
+    "SMU": {
+      "seed": 11,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "B. Edwards", "position": "G", "status": "Questionable", "injury": "Ankle", "updated": "2025-02-25" }
+      ]
+    },
+    "Virginia": {
+      "seed": 3,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Wright State": {
+      "seed": 14,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Kentucky": {
+      "seed": 7,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "B. Garrison", "position": "F", "status": "Probable", "injury": "Undisclosed", "updated": "2025-03-09" },
+        { "player": "B. Hawthorne", "position": "F", "status": "Out", "injury": "Redshirt", "updated": "2025-01-25" },
+        { "player": "K. Williams", "position": "G", "status": "Probable", "injury": "Foot", "updated": "2025-01-20" },
+        { "player": "J. Lowe", "position": "G", "status": "Out", "injury": "Undisclosed", "updated": "2025-01-12" },
+        { "player": "J. Quaintance", "position": "F", "status": "Out", "injury": "Knee", "updated": "2025-01-08" }
+      ]
+    },
+    "Santa Clara": {
+      "seed": 10,
+      "region": "Midwest",
+      "injuries": []
+    },
+    "Iowa State": {
+      "seed": 2,
+      "region": "Midwest",
+      "injuries": [
+        { "player": "X. Mitchell", "position": "F", "status": "Questionable", "injury": "Undisclosed", "updated": "2025-01-05" },
+        { "player": "M. Williams", "position": "G", "status": "Out", "injury": "Hip", "updated": "2024-06-19" }
+      ]
+    },
+    "Tennessee State": {
+      "seed": 15,
+      "region": "Midwest",
+      "injuries": []
+    }
+  },
+  "summary": {
+    "total_tournament_teams": 68,
+    "teams_with_injuries": 42,
+    "teams_fully_healthy": 26,
+    "notable_injuries": [
+      "Duke: C. Foster (G) - Out with Foot injury (key player, updated Mar 9)",
+      "Kentucky: J. Quaintance (F) - Out with Knee (5 total injuries)",
+      "BYU: 6 players injured/out (most on any tournament team)",
+      "Michigan: L. Cason (G) - Out with Knee (1-seed)",
+      "North Carolina: C. Wilson (F) + J. Brown (C) both Out",
+      "UConn: J. Stewart (F) - Out with Knee",
+      "Kennesaw State: 4 players Out/Questionable (14-seed)",
+      "Texas Tech: J. Toppin (F) - Out with Knee"
+    ]
+  }
+}

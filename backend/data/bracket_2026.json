@@ -1,0 +1,234 @@
+{
+  "season": 2026,
+  "rounds": [
+    {
+      "name": "First Four",
+      "matchups": [
+        {
+          "gameId": "ff1",
+          "region": "First Four",
+          "teamA": { "name": "Texas", "seed": 11 },
+          "teamB": { "name": "NC State", "seed": 11 }
+        },
+        {
+          "gameId": "ff2",
+          "region": "First Four",
+          "teamA": { "name": "Miami (OH)", "seed": 11 },
+          "teamB": { "name": "SMU", "seed": 11 }
+        },
+        {
+          "gameId": "ff3",
+          "region": "First Four",
+          "teamA": { "name": "UMBC", "seed": 16 },
+          "teamB": { "name": "Howard", "seed": 16 }
+        },
+        {
+          "gameId": "ff4",
+          "region": "First Four",
+          "teamA": { "name": "Prairie View A&M", "seed": 16 },
+          "teamB": { "name": "Lehigh", "seed": 16 }
+        }
+      ]
+    },
+    {
+      "name": "First Round",
+      "matchups": [
+        {
+          "gameId": "east_1",
+          "region": "East",
+          "teamA": { "name": "Duke", "seed": 1 },
+          "teamB": { "name": "Siena", "seed": 16 }
+        },
+        {
+          "gameId": "east_2",
+          "region": "East",
+          "teamA": { "name": "Ohio State", "seed": 8 },
+          "teamB": { "name": "TCU", "seed": 9 }
+        },
+        {
+          "gameId": "east_3",
+          "region": "East",
+          "teamA": { "name": "St. John's", "seed": 5 },
+          "teamB": { "name": "Northern Iowa", "seed": 12 }
+        },
+        {
+          "gameId": "east_4",
+          "region": "East",
+          "teamA": { "name": "Kansas", "seed": 4 },
+          "teamB": { "name": "Cal Baptist", "seed": 13 }
+        },
+        {
+          "gameId": "east_5",
+          "region": "East",
+          "teamA": { "name": "Louisville", "seed": 6 },
+          "teamB": { "name": "South Florida", "seed": 11 }
+        },
+        {
+          "gameId": "east_6",
+          "region": "East",
+          "teamA": { "name": "Michigan State", "seed": 3 },
+          "teamB": { "name": "North Dakota State", "seed": 14 }
+        },
+        {
+          "gameId": "east_7",
+          "region": "East",
+          "teamA": { "name": "UCLA", "seed": 7 },
+          "teamB": { "name": "UCF", "seed": 10 }
+        },
+        {
+          "gameId": "east_8",
+          "region": "East",
+          "teamA": { "name": "UConn", "seed": 2 },
+          "teamB": { "name": "Furman", "seed": 15 }
+        },
+
+        {
+          "gameId": "south_1",
+          "region": "South",
+          "teamA": { "name": "Florida", "seed": 1 },
+          "teamB": { "name": "Prairie View A&M / Lehigh", "seed": 16 }
+        },
+        {
+          "gameId": "south_2",
+          "region": "South",
+          "teamA": { "name": "Clemson", "seed": 8 },
+          "teamB": { "name": "Iowa", "seed": 9 }
+        },
+        {
+          "gameId": "south_3",
+          "region": "South",
+          "teamA": { "name": "Vanderbilt", "seed": 5 },
+          "teamB": { "name": "McNeese", "seed": 12 }
+        },
+        {
+          "gameId": "south_4",
+          "region": "South",
+          "teamA": { "name": "Nebraska", "seed": 4 },
+          "teamB": { "name": "Troy", "seed": 13 }
+        },
+        {
+          "gameId": "south_5",
+          "region": "South",
+          "teamA": { "name": "North Carolina", "seed": 6 },
+          "teamB": { "name": "VCU", "seed": 11 }
+        },
+        {
+          "gameId": "south_6",
+          "region": "South",
+          "teamA": { "name": "Illinois", "seed": 3 },
+          "teamB": { "name": "Penn", "seed": 14 }
+        },
+        {
+          "gameId": "south_7",
+          "region": "South",
+          "teamA": { "name": "Saint Mary's", "seed": 7 },
+          "teamB": { "name": "Texas A&M", "seed": 10 }
+        },
+        {
+          "gameId": "south_8",
+          "region": "South",
+          "teamA": { "name": "Houston", "seed": 2 },
+          "teamB": { "name": "Idaho", "seed": 15 }
+        },
+
+        {
+          "gameId": "west_1",
+          "region": "West",
+          "teamA": { "name": "Arizona", "seed": 1 },
+          "teamB": { "name": "LIU", "seed": 16 }
+        },
+        {
+          "gameId": "west_2",
+          "region": "West",
+          "teamA": { "name": "Villanova", "seed": 8 },
+          "teamB": { "name": "Utah State", "seed": 9 }
+        },
+        {
+          "gameId": "west_3",
+          "region": "West",
+          "teamA": { "name": "Wisconsin", "seed": 5 },
+          "teamB": { "name": "High Point", "seed": 12 }
+        },
+        {
+          "gameId": "west_4",
+          "region": "West",
+          "teamA": { "name": "Arkansas", "seed": 4 },
+          "teamB": { "name": "Hawaii", "seed": 13 }
+        },
+        {
+          "gameId": "west_5",
+          "region": "West",
+          "teamA": { "name": "BYU", "seed": 6 },
+          "teamB": { "name": "Texas / NC State", "seed": 11 }
+        },
+        {
+          "gameId": "west_6",
+          "region": "West",
+          "teamA": { "name": "Gonzaga", "seed": 3 },
+          "teamB": { "name": "Kennesaw State", "seed": 14 }
+        },
+        {
+          "gameId": "west_7",
+          "region": "West",
+          "teamA": { "name": "Miami", "seed": 7 },
+          "teamB": { "name": "Missouri", "seed": 10 }
+        },
+        {
+          "gameId": "west_8",
+          "region": "West",
+          "teamA": { "name": "Purdue", "seed": 2 },
+          "teamB": { "name": "Queens", "seed": 15 }
+        },
+
+        {
+          "gameId": "midwest_1",
+          "region": "Midwest",
+          "teamA": { "name": "Michigan", "seed": 1 },
+          "teamB": { "name": "UMBC / Howard", "seed": 16 }
+        },
+        {
+          "gameId": "midwest_2",
+          "region": "Midwest",
+          "teamA": { "name": "Georgia", "seed": 8 },
+          "teamB": { "name": "Saint Louis", "seed": 9 }
+        },
+        {
+          "gameId": "midwest_3",
+          "region": "Midwest",
+          "teamA": { "name": "Texas Tech", "seed": 5 },
+          "teamB": { "name": "Akron", "seed": 12 }
+        },
+        {
+          "gameId": "midwest_4",
+          "region": "Midwest",
+          "teamA": { "name": "Alabama", "seed": 4 },
+          "teamB": { "name": "Hofstra", "seed": 13 }
+        },
+        {
+          "gameId": "midwest_5",
+          "region": "Midwest",
+          "teamA": { "name": "Tennessee", "seed": 6 },
+          "teamB": { "name": "Miami (OH) / SMU", "seed": 11 }
+        },
+        {
+          "gameId": "midwest_6",
+          "region": "Midwest",
+          "teamA": { "name": "Virginia", "seed": 3 },
+          "teamB": { "name": "Wright State", "seed": 14 }
+        },
+        {
+          "gameId": "midwest_7",
+          "region": "Midwest",
+          "teamA": { "name": "Kentucky", "seed": 7 },
+          "teamB": { "name": "Santa Clara", "seed": 10 }
+        },
+        {
+          "gameId": "midwest_8",
+          "region": "Midwest",
+          "teamA": { "name": "Iowa State", "seed": 2 },
+          "teamB": { "name": "Tennessee State", "seed": 15 }
+        }
+      ]
+    }
+  ]
+}
