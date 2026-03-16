@@ -8,6 +8,7 @@ production the injured players represent.
 import json
 import os
 import re
+from datetime import date, datetime
 from typing import Dict, List, Optional, Tuple
 
 from mbb_api import MBBAPIClient
@@ -33,6 +34,7 @@ class InjuryAnalyzer:
         self.season = season
         self._injuries: Dict[str, Dict] = {}
         self._roster_cache: Dict[str, List[Dict]] = {}  # team_name -> roster
+        self._team_games_cache: Dict[str, Optional[float]] = {}  # team_name -> current season games
         self._player_stats_cache: Dict[str, Dict] = {}  # player_id -> stats
         self._load_injuries()
 
@@ -94,6 +96,7 @@ class InjuryAnalyzer:
 
         # Try to fetch real stats for injured players via roster lookup
         roster = self._get_roster(team_name, team_data)
+        team_games_played = self._get_team_games_played(team_name)
 
         total_impact = 0.0
         player_details = []
@@ -102,9 +105,43 @@ class InjuryAnalyzer:
             status_w = STATUS_WEIGHT.get(inj["status"], 0.5)
             player_name = inj["player"]
             position = inj.get("position", "G")
+            is_preseason_carryover = self._is_preseason_carryover_injury(inj)
+            updated_year = self._injury_updated_year(inj)
+
+            # Preseason "Out" entries are usually stale carryover data for the
+            # next tournament season (or redshirt-like cases), so exclude older
+            # years while keeping recent preseason injuries (e.g., players who
+            # were active this season and are now ruled out).
+            if (
+                is_preseason_carryover
+                and inj.get("status") == "Out"
+                and (updated_year is None or updated_year < (self.season - 1))
+            ):
+                continue
 
             # Try to find this player in the roster and get their stats
-            ppg, rpg, apg = self._get_player_stats(player_name, position, roster)
+            ppg, rpg, apg, has_current_production, games_played = self._get_player_stats(
+                player_name, position, roster
+            )
+
+            if is_preseason_carryover:
+                # Ignore clearly stale cases:
+                # - no current-season production, or
+                # - older-year entries with ambiguous historical production
+                if not has_current_production:
+                    continue
+                if updated_year is not None and updated_year < (self.season - 1):
+                    continue
+                # Keep non-Out preseason injuries but damp them and cap to
+                # fallback-level production so old seasons don't dominate.
+                fallback_ppg = POSITION_FALLBACK_PPG.get(position, 6.0)
+                fallback_rpg = 3.0 if position in ("F", "C", "F-C") else 2.0
+                fallback_apg = 3.0 if position in ("G", "G-F") else 1.5
+                ppg = min(ppg, fallback_ppg)
+                rpg = min(rpg, fallback_rpg)
+                apg = min(apg, fallback_apg)
+                if inj.get("status") != "Out":
+                    status_w *= 0.35
 
             # Composite impact score weighted toward scoring
             impact = (ppg * 1.0 + rpg * 0.4 + apg * 0.6) * status_w
@@ -200,8 +237,8 @@ class InjuryAnalyzer:
 
     def _get_player_stats(
         self, player_name: str, position: str, roster: List[Dict]
-    ) -> Tuple[float, float, float]:
-        """Get (PPG, RPG, APG) for a player. Falls back to position estimates."""
+    ) -> Tuple[float, float, float, bool, float]:
+        """Get (PPG, RPG, APG, has_current_production, games_played)."""
         # Try to match player in roster by short name (e.g. "C. Foster")
         matched = self._match_player(player_name, roster)
 
@@ -213,14 +250,85 @@ class InjuryAnalyzer:
                     ppg = self._extract_stat(stats, "avgPoints")
                     rpg = self._extract_stat(stats, "avgRebounds")
                     apg = self._extract_stat(stats, "avgAssists")
-                    if ppg > 0 or rpg > 0 or apg > 0:
-                        return ppg, rpg, apg
+                    games_played = self._extract_stat(stats, "gamesPlayed")
+                    has_current_production = (
+                        games_played > 0 or ppg > 0 or rpg > 0 or apg > 0
+                    )
+                    if has_current_production:
+                        return ppg, rpg, apg, True, games_played
+                    # Explicitly return zero production if the player is on
+                    # roster but has not played this season.
+                    return 0.0, 0.0, 0.0, False, games_played
 
         # Fallback: position-based estimate
         fallback_ppg = POSITION_FALLBACK_PPG.get(position, 6.0)
         fallback_rpg = 3.0 if position in ("F", "C", "F-C") else 2.0
         fallback_apg = 3.0 if position in ("G", "G-F") else 1.5
-        return fallback_ppg, fallback_rpg, fallback_apg
+        return fallback_ppg, fallback_rpg, fallback_apg, True, 0.0
+
+    def _get_team_games_played(self, team_name: str) -> Optional[float]:
+        """Get current-season team games played from standings (wins + losses)."""
+        norm = self._norm(team_name)
+        if norm in self._team_games_cache:
+            return self._team_games_cache[norm]
+
+        games_played = None
+        try:
+            standings = self.api.get_standings(self.season)
+            best_len = None
+            for entry in standings.get("standings", {}).get("entries", []):
+                t = entry.get("team", {})
+                t_name = t.get("displayName") or t.get("name", "")
+                t_norm = self._norm(t_name)
+                if t_norm == norm:
+                    wins = float(self._entry_stat(entry, "wins"))
+                    losses = float(self._entry_stat(entry, "losses"))
+                    games_played = wins + losses
+                    break
+                if t_norm.startswith(norm + " "):
+                    if best_len is None or len(t_norm) < best_len:
+                        best_len = len(t_norm)
+                        wins = float(self._entry_stat(entry, "wins"))
+                        losses = float(self._entry_stat(entry, "losses"))
+                        games_played = wins + losses
+        except Exception as e:
+            print(f"  InjuryAnalyzer: Could not fetch team games for {team_name}: {e}")
+
+        self._team_games_cache[norm] = games_played
+        return games_played
+
+    @staticmethod
+    def _entry_stat(entry: Dict, stat_name: str) -> float:
+        for stat in entry.get("stats", []):
+            if stat.get("name") == stat_name:
+                return float(stat.get("value", 0) or 0)
+        return 0.0
+
+    def _is_preseason_carryover_injury(self, injury: Dict) -> bool:
+        """True when injury update predates the current season's start window."""
+        updated = injury.get("updated")
+        if not updated:
+            return False
+        try:
+            updated_date = datetime.strptime(updated, "%Y-%m-%d").date()
+        except ValueError:
+            return False
+        return updated_date < self._season_start_date()
+
+    @staticmethod
+    def _injury_updated_year(injury: Dict) -> Optional[int]:
+        updated = injury.get("updated")
+        if not updated:
+            return None
+        try:
+            return datetime.strptime(updated, "%Y-%m-%d").year
+        except ValueError:
+            return None
+
+    def _season_start_date(self) -> date:
+        """Approximate season start date for a given tournament year."""
+        # 2026 tournament corresponds to the 2025-26 season.
+        return date(self.season - 1, 11, 1)
 
     def _match_player(self, short_name: str, roster: List[Dict]) -> Optional[Dict]:
         """Match abbreviated name (e.g. 'C. Foster') to a roster entry.
