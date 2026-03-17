@@ -205,6 +205,24 @@ td {
   border-color: rgba(46, 200, 124, 0.25);
 }
 
+.badge--impact-none {
+  color: #7be0a8;
+  background: rgba(46, 200, 124, 0.12);
+  border-color: rgba(46, 200, 124, 0.25);
+}
+
+.badge--impact-low {
+  color: #f5c542;
+  background: rgba(245, 197, 66, 0.12);
+  border-color: rgba(245, 197, 66, 0.25);
+}
+
+.badge--impact-high {
+  color: #ff8a8a;
+  background: rgba(217, 79, 79, 0.14);
+  border-color: rgba(217, 79, 79, 0.35);
+}
+
 .badge--inj-even {
   color: var(--muted);
 }

@@ -42,7 +42,10 @@
     async function loadBracket() {
       setStatus('Loading bracket...');
       try {
-        const response = await fetch(`${apiBase}/api/bracket?season=2026&start=2026-03-16&end=2026-03-20`);
+        const response = await fetch(
+          `${apiBase}/api/bracket?season=2026&start=2026-03-16&end=2026-03-20&t=${Date.now()}`,
+          { cache: 'no-store' }
+        );
         const data = await response.json();
         if (data.error) {
           setStatus(`Error: ${data.error}`, true);
@@ -107,26 +110,38 @@
       const teamAName = matchup.teamA?.name || 'Team A';
       const teamBName = matchup.teamB?.name || 'Team B';
 
-      if (!a?.players?.length && !b?.players?.length) return '<span class="badge badge--healthy">Healthy</span>';
+      if (!a?.players?.length && !b?.players?.length) {
+        return '<span class="badge badge--impact-none">Healthy</span>';
+      }
 
       // Compare raw injury impact to determine who is healthier
       const aImpact = a?.total_impact || 0;
       const bImpact = b?.total_impact || 0;
       const diff = Math.abs(aImpact - bImpact);
-      const adjPct = (diff * 0.5).toFixed(1); // approximate % swing
+      const adj = metrics.injuryAdjustment || 0;
+      const adjAbs = Math.abs(adj);
 
-      let label, cls;
+      let impactLabel, impactCls;
+      if (adjAbs < 0.01) {
+        impactLabel = 'No impact';
+        impactCls = 'badge--impact-none';
+      } else if (adjAbs < 0.04) {
+        impactLabel = 'Little impact';
+        impactCls = 'badge--impact-low';
+      } else {
+        impactLabel = 'Large impact';
+        impactCls = 'badge--impact-high';
+      }
+
+      let edgeLabel;
       if (diff < 1.0) {
-        label = 'Even';
-        cls = 'badge--inj-even';
+        edgeLabel = 'Even';
       } else if (aImpact < bImpact) {
         // Team A is healthier (less injury impact)
-        label = `${teamAName} edge`;
-        cls = 'badge--inj-a';
+        edgeLabel = `${teamAName} edge`;
       } else {
         // Team B is healthier
-        label = `${teamBName} edge`;
-        cls = 'badge--inj-b';
+        edgeLabel = `${teamBName} edge`;
       }
 
       // Build tooltip content
@@ -144,10 +159,10 @@
           tooltip += `  ${p.player} — ${p.status} (${p.injury}), ${p.ppg} PPG/${p.rpg} RPG/${p.apg} APG\n`;
         });
       }
-      const adj = metrics.injuryAdjustment || 0;
       tooltip += `\nWin % adjustment: ${adj > 0 ? '+' : ''}${(adj * 100).toFixed(1)}%`;
+      tooltip += `\nImpact tier: ${impactLabel}`;
 
-      return `<span class="badge ${cls} injury-hover" title="${tooltip.replace(/"/g, '&quot;')}">${label}</span>`;
+      return `<span class="badge ${impactCls} injury-hover" title="${tooltip.replace(/"/g, '&quot;')}">${edgeLabel}</span>`;
     }
 
     function renderActiveRound() {
@@ -162,7 +177,25 @@
         return;
       }
 
-      const rows = round.matchups.map(matchup => {
+      const regionOrder = ['East', 'South', 'West', 'Midwest', 'First Four', 'Tournament'];
+      const grouped = new Map();
+
+      round.matchups.forEach(matchup => {
+        const region = matchup.region || 'Tournament';
+        if (!grouped.has(region)) grouped.set(region, []);
+        grouped.get(region).push(matchup);
+      });
+
+      const sortedRegions = Array.from(grouped.keys()).sort((a, b) => {
+        const aIdx = regionOrder.indexOf(a);
+        const bIdx = regionOrder.indexOf(b);
+        const aRank = aIdx === -1 ? 999 : aIdx;
+        const bRank = bIdx === -1 ? 999 : bIdx;
+        if (aRank !== bRank) return aRank - bRank;
+        return a.localeCompare(b);
+      });
+
+      const renderRows = (matchups) => matchups.map(matchup => {
         const winner = matchup.predictedWinner || {};
         const aIsWinner = (winner.name && winner.name === matchup.teamA?.name)
                        || (winner.id && winner.id === matchup.teamA?.id);
@@ -183,24 +216,34 @@
         `;
       }).join('');
 
+      const regionSections = sortedRegions.map(region => {
+        const rows = renderRows(grouped.get(region));
+        return `
+          <div class="table-container">
+            <h2>${region}</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Team A</th>
+                  <th>Team B</th>
+                  <th>Win %</th>
+                  <th>Injuries</th>
+                  <th>Prediction Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }).join('');
+
       $roundContent.innerHTML = `
         <div class="table-container">
           <h2>${round.name}</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Team A</th>
-                <th>Team B</th>
-                <th>Win %</th>
-                <th>Injuries</th>
-                <th>Prediction Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rows}
-            </tbody>
-          </table>
         </div>
+        ${regionSections}
       `;
     }
 

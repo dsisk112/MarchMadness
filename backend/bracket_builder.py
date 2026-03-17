@@ -20,7 +20,6 @@ class BracketBuilder:
     NAME_ALIASES = {
         "cal baptist": "california baptist",
         "liu": "long island university",
-        "hawaii": "hawai i",
     }
 
     # Historical upset probabilities — probability that the BETTER seed wins
@@ -430,6 +429,30 @@ class BracketBuilder:
             api_weight = 0.5
 
         calibrated_prob_a = max(0.01, min(0.99, (api_prob_a * api_weight) + (seed_prob_a * (1 - api_weight))))
+
+        close_threshold = 0.08
+        distance_from_coinflip = abs(calibrated_prob_a - 0.5)
+        if distance_from_coinflip <= close_threshold:
+            close_factor = 1.0 - (distance_from_coinflip / close_threshold)
+            historical_weight = 0.15 + (0.20 * close_factor)
+            if self._is_classic_upset_band(seed_a, seed_b):
+                historical_weight = max(0.05, historical_weight - 0.10)
+            calibrated_prob_a = max(
+                0.01,
+                min(
+                    0.99,
+                    (calibrated_prob_a * (1 - historical_weight)) + (seed_prob_a * historical_weight),
+                ),
+            )
+            metrics["closeGameHistoricalWeight"] = round(historical_weight, 3)
+
+        if self._is_classic_upset_band(seed_a, seed_b):
+            max_distance = 0.20
+            calibrated_prob_a = max(
+                seed_prob_a - max_distance,
+                min(seed_prob_a + max_distance, calibrated_prob_a),
+            )
+
         calibrated_winner_is_a = calibrated_prob_a >= 0.5
         calibrated_winner_prob = calibrated_prob_a if calibrated_winner_is_a else (1 - calibrated_prob_a)
 
@@ -459,7 +482,21 @@ class BracketBuilder:
             drivers.append(
                 f"Tournament prior: #{seed_a} vs #{seed_b} seed tempers raw regular-season stats"
             )
+        if metrics.get("closeGameHistoricalWeight") is not None:
+            if self._is_classic_upset_band(seed_a, seed_b):
+                drivers.append(
+                    "Close-game anchor: blended with historical upset profile for this seed band"
+                )
+            else:
+                drivers.append(
+                    "Close-game anchor: leaned toward historical seed outcomes in near coin-flip matchup"
+                )
         metrics["keyDrivers"] = drivers[:4]
+
+    @staticmethod
+    def _is_classic_upset_band(seed_a: int, seed_b: int) -> bool:
+        pair = tuple(sorted((seed_a, seed_b)))
+        return pair in {(5, 12), (6, 11), (7, 10)}
 
     def _seed_probability_for_team_a(self, team_a: Dict, team_b: Dict) -> float:
         """Return the seed-based prior probability that team A wins."""
@@ -553,8 +590,10 @@ class BracketBuilder:
     @staticmethod
     def _norm(name: str) -> str:
         n = name.strip().lower()
-        n = re.sub(r"[\.\-'/&]", " ", n)
-        return re.sub(r"\s+", " ", n)
+        n = n.replace("&", " and ")
+        n = n.replace("'", "")
+        n = re.sub(r"[\.\-/(),]", " ", n)
+        return re.sub(r"\s+", " ", n).strip()
 
     def _enrich_team(self, team: Dict, name_to_info: Dict[str, Dict]):
         if not team or "name" not in team or not name_to_info:

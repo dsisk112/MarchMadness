@@ -70,6 +70,32 @@ class DummyApi:
 
 
 class TestInjuryAnalyzer(unittest.TestCase):
+    def test_resolve_injury_name_parenthetical_variant(self):
+        analyzer = InjuryAnalyzer(DummyApi(), season=2026)
+        analyzer._injuries = {
+            "Miami (OH)": {"injuries": []},
+            "Miami": {"injuries": []},
+        }
+
+        self.assertEqual(
+            analyzer._resolve_injury_team_name("Miami (OH) RedHawks"),
+            "Miami (OH)",
+        )
+        self.assertEqual(
+            analyzer._resolve_injury_team_name("Miami Hurricanes"),
+            "Miami",
+        )
+
+    def test_resolve_injury_name_handles_punctuation(self):
+        analyzer = InjuryAnalyzer(DummyApi(), season=2026)
+        analyzer._injuries = {
+            "St. John's": {"injuries": []},
+        }
+        self.assertEqual(
+            analyzer._resolve_injury_team_name("St Johns Red Storm"),
+            "St. John's",
+        )
+
     def test_preseason_carryover_no_current_stats_is_ignored(self):
         analyzer = InjuryAnalyzer(DummyApi(), season=2026)
         analyzer._injuries = {

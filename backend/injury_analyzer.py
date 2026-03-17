@@ -185,15 +185,23 @@ class InjuryAnalyzer:
             if self._norm(name) == norm:
                 return name
 
-        # 2) Prefix match in either direction, choose shortest matching injury key
+        # 2) Prefix match in either direction.
+        # Prefer specific keys when input is more specific ("miami oh redhawks" -> "Miami (OH)").
+        # Prefer shorter keys when input is generic ("duke" -> "Duke").
         best_match = None
-        best_len = None
+        best_rank = None
         for name in self._injuries.keys():
             injury_norm = self._norm(name)
-            if norm.startswith(injury_norm + " ") or injury_norm.startswith(norm + " "):
-                if best_len is None or len(injury_norm) < best_len:
-                    best_match = name
-                    best_len = len(injury_norm)
+            if norm.startswith(injury_norm + " "):
+                rank = (0, -len(injury_norm))
+            elif injury_norm.startswith(norm + " "):
+                rank = (1, len(injury_norm))
+            else:
+                continue
+
+            if best_rank is None or rank < best_rank:
+                best_rank = rank
+                best_match = name
 
         return best_match
 
@@ -424,5 +432,7 @@ class InjuryAnalyzer:
     @staticmethod
     def _norm(name: str) -> str:
         n = name.strip().lower()
-        n = re.sub(r"[\.\-'/&]", " ", n)
-        return re.sub(r"\s+", " ", n)
+        n = n.replace("&", " and ")
+        n = n.replace("'", "")
+        n = re.sub(r"[\.\-/(),]", " ", n)
+        return re.sub(r"\s+", " ", n).strip()
