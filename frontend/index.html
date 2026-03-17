@@ -165,33 +165,46 @@
       return `<span class="badge ${impactCls} injury-hover" title="${tooltip.replace(/"/g, '&quot;')}">${edgeLabel}</span>`;
     }
 
+    const SIGNAL_DEFS = {
+      1: { label: 'Road', keyword: 'travels better', color: '#60c9ff' },
+      2: { label: 'Margin', keyword: 'thin per-game margin', color: '#f5c542' },
+      3: { label: 'Top-heavy', keyword: 'top-heavy', color: '#ff8a8a' },
+      4: { label: '3PT', keyword: '3PT upset', color: '#7be0a8' },
+      5: { label: 'Turnovers', keyword: 'sloppier', color: '#c9a0ff' },
+    };
+
     function formatUpsetCell(matchup) {
-      const winner = matchup.predictedWinner || {};
-      const teamA = matchup.teamA || {};
-      const teamB = matchup.teamB || {};
+      const mx = matchup.metrics || {};
+      const ur = (typeof mx.upsetRisk === 'object' && mx.upsetRisk) || {};
+      const signals = ur.signals || [];
+      const score = ur.score || 0;
 
-      const seedA = Number.isFinite(Number(teamA.seed)) ? Number(teamA.seed) : null;
-      const seedB = Number.isFinite(Number(teamB.seed)) ? Number(teamB.seed) : null;
-      if (seedA == null || seedB == null) {
-        return '<span class="badge">—</span>';
+      if (!signals.length && score <= 20) {
+        return '<span class="signal-quiet">—</span>';
       }
 
-      const winnerIsA = (winner.name && winner.name === teamA.name)
-        || (winner.id && String(winner.id) === String(teamA.id));
-      const winnerIsB = (winner.name && winner.name === teamB.name)
-        || (winner.id && String(winner.id) === String(teamB.id));
+      // Map each signal string to its number
+      const circles = [];
+      signals.forEach(sig => {
+        for (const [num, def] of Object.entries(SIGNAL_DEFS)) {
+          if (sig.toLowerCase().includes(def.keyword)) {
+            const tip = `Signal ${num} (${def.label}): ${sig}`;
+            circles.push(
+              `<span class="signal-dot" style="border-color:${def.color};color:${def.color}" title="${tip.replace(/"/g, '&quot;')}">${num}</span>`
+            );
+            break;
+          }
+        }
+      });
 
-      if (!winnerIsA && !winnerIsB) {
-        return '<span class="badge">—</span>';
+      // Show risk score badge if >= 25
+      let scoreBadge = '';
+      if (score >= 25) {
+        const cls = score >= 40 ? 'risk-high' : 'risk-med';
+        scoreBadge = `<span class="signal-score ${cls}" title="Upset Risk Score: ${score}/100">${score}</span>`;
       }
 
-      const winnerSeed = winnerIsA ? seedA : seedB;
-      const loserSeed = winnerIsA ? seedB : seedA;
-      if (winnerSeed > loserSeed) {
-        return `<span class="badge badge--upset">Upset ${winnerSeed} over ${loserSeed}</span>`;
-      }
-
-      return '<span class="badge badge--no-upset">Expected</span>';
+      return (circles.length ? circles.join('') : '') + scoreBadge || '<span class="signal-quiet">—</span>';
     }
 
     function renderActiveRound() {
@@ -258,7 +271,7 @@
                   <th>Team A</th>
                   <th>Team B</th>
                   <th>Win %</th>
-                  <th>Upset</th>
+                  <th>Signals</th>
                   <th>Injuries</th>
                   <th>Prediction Reason</th>
                 </tr>

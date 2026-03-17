@@ -194,18 +194,54 @@ td {
   color: #7be0a8;
 }
 
-/* Upset column */
+/* Signals column */
 .col-upset {
   white-space: nowrap;
 }
 
-.badge--upset {
-  color: #f5c542;
-  background: rgba(245, 197, 66, 0.12);
-  border-color: rgba(245, 197, 66, 0.3);
+.signal-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-right: 4px;
+  cursor: help;
+  background: rgba(255,255,255,0.04);
 }
 
-.badge--no-upset {
+.signal-dot:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.signal-score {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: 2px;
+  cursor: help;
+}
+
+.signal-score.risk-med {
+  color: var(--muted);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.signal-score.risk-high {
+  color: #f5c542;
+  background: rgba(245,197,66,0.12);
+  border: 1px solid rgba(245,197,66,0.3);
+}
+
+.signal-quiet {
   color: var(--muted);
 }
 
