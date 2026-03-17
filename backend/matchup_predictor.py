@@ -67,6 +67,16 @@ class MatchupPredictor:
         # Combine scores (weighted average)
         total_score = (team_score * 0.5) + (player_score * 0.3) + (ranking_score * 0.2)
 
+        # Upset risk context (derived only from available team + roster stats)
+        favorite_is_a = total_score >= 0
+        if favorite_is_a:
+            upset_context = self._calculate_upset_risk(team_a, team_b, roster_a, roster_b)
+            total_score -= upset_context['pressure']
+        else:
+            upset_context = self._calculate_upset_risk(team_b, team_a, roster_b, roster_a)
+            total_score += upset_context['pressure']
+        metrics['upsetRisk'] = upset_context
+
         # Convert to probability using sigmoid
         win_prob = 1 / (1 + math.exp(-total_score))
 
@@ -75,7 +85,7 @@ class MatchupPredictor:
 
         # Key drivers (winner-first, with explicit close-game context)
         metrics['keyDrivers'] = self._generate_key_drivers(
-            team_a, team_b, roster_a, roster_b, win_prob
+            team_a, team_b, roster_a, roster_b, win_prob, upset_context
         )
 
         return win_prob, metrics
@@ -172,7 +182,8 @@ class MatchupPredictor:
         return 0
 
     def _generate_key_drivers(self, team_a: Dict, team_b: Dict,
-                            roster_a: List[Dict], roster_b: List[Dict], win_prob_a: float) -> List[str]:
+                            roster_a: List[Dict], roster_b: List[Dict], win_prob_a: float,
+                            upset_context: Dict = None) -> List[str]:
         """Generate winner-first reasons and call out what keeps games close."""
         team_a_name = team_a['team']['displayName']
         team_b_name = team_b['team']['displayName']
@@ -238,7 +249,122 @@ class MatchupPredictor:
         else:
             drivers.append(f"Model edge: {winner_name} has a clear profile advantage")
 
+        if upset_context and upset_context.get('score', 0) >= 60:
+            drivers.append(
+                f"Upset risk: {upset_context.get('underdog')} profile pressure is elevated ({upset_context.get('score')}/100)"
+            )
+
         return drivers[:3]
+
+    def _calculate_upset_risk(self, favorite: Dict, underdog: Dict,
+                            roster_fav: List[Dict], roster_dog: List[Dict]) -> Dict:
+        """Calculate upset pressure against the current favorite using available and derived stats."""
+        signals: List[str] = []
+        risk_points = 0.0
+
+        favorite_name = favorite['team']['displayName']
+        underdog_name = underdog['team']['displayName']
+
+        # 1) Road/neutral form proxy
+        fav_away = self._get_away_win_pct(favorite)
+        dog_away = self._get_away_win_pct(underdog)
+        if fav_away is not None and dog_away is not None and dog_away > fav_away:
+            delta = dog_away - fav_away
+            risk_points += min(14.0, delta * 28.0)
+            signals.append(f"{underdog_name} travels better ({dog_away:.3f} vs {fav_away:.3f})")
+
+        # 2) Favorite fragility in per-game margin
+        fav_ppg = self._get_stat_value_any(favorite, ['avgPointsFor'])
+        fav_ppga = self._get_stat_value_any(favorite, ['avgPointsAgainst'])
+        if fav_ppg is not None and fav_ppga is not None:
+            fav_margin = fav_ppg - fav_ppga
+            if fav_margin < 6:
+                risk_points += 12.0
+                signals.append(f"{favorite_name} has a thin per-game margin ({fav_margin:.1f} pts)")
+            elif fav_margin < 10:
+                risk_points += 6.0
+
+        # 3) Top-heavy scoring risk (few big scorers)
+        fav_top_share = self._top_scorer_share(roster_fav)
+        dog_top_share = self._top_scorer_share(roster_dog)
+        if fav_top_share is not None and dog_top_share is not None:
+            if fav_top_share - dog_top_share > 0.10:
+                risk_points += 12.0
+                signals.append(f"{favorite_name} offense is more top-heavy")
+
+        # 4) Underdog three-point path
+        dog_3pa = self._get_stat_value_any(underdog, ['avgThreePointFieldGoalsAttempted', 'threePointFieldGoalsAttempted'])
+        dog_3p_pct = self._get_stat_value_any(underdog, ['threePointFieldGoalPct', 'avgThreePointFieldGoalPct'])
+        if dog_3pa is not None and dog_3p_pct is not None:
+            if dog_3pa >= 22 and dog_3p_pct >= 0.34:
+                risk_points += 8.0
+                signals.append(f"{underdog_name} has a live 3PT upset profile")
+
+        # 5) Turnover edge proxy
+        fav_to = self._get_stat_value_any(favorite, ['avgTurnovers'])
+        dog_to = self._get_stat_value_any(underdog, ['avgTurnovers'])
+        if fav_to is not None and dog_to is not None and fav_to - dog_to >= 1.5:
+            risk_points += 6.0
+            signals.append(f"{favorite_name} is sloppier with the ball")
+
+        score = int(max(5, min(95, round(20 + risk_points))))
+        pressure = max(0.0, min(0.45, (score - 35) / 100.0))
+
+        return {
+            'favorite': favorite_name,
+            'underdog': underdog_name,
+            'score': score,
+            'pressure': round(pressure, 3),
+            'signals': signals[:3],
+        }
+
+    def _get_away_win_pct(self, team: Dict) -> float:
+        # Try direct stat names first
+        away_pct = self._get_stat_value_any(team, ['awayWinPercent', 'roadWinPercent'])
+        if away_pct is not None:
+            return away_pct
+
+        # Parse the 'Road' stat's summary string (e.g. '2-8' -> 0.20)
+        for stat in team.get('stats', []):
+            if stat.get('name') == 'Road' and stat.get('summary'):
+                try:
+                    w, l = [int(x) for x in str(stat['summary']).split('-')[:2]]
+                    if w + l > 0:
+                        return w / (w + l)
+                except (ValueError, AttributeError):
+                    pass
+
+        # Fallback: separate wins/losses fields
+        away_wins = self._get_stat_value_any(team, ['awayWins', 'roadWins'])
+        away_losses = self._get_stat_value_any(team, ['awayLosses', 'roadLosses'])
+        if away_wins is not None and away_losses is not None and (away_wins + away_losses) > 0:
+            return away_wins / (away_wins + away_losses)
+
+        return None
+
+    def _top_scorer_share(self, roster: List[Dict]) -> float:
+        points = []
+        for player in roster:
+            ppg = self._extract_stat(player.get('stats', {}), 'avgPoints')
+            if ppg > 0:
+                points.append(ppg)
+        if len(points) < 4:
+            return None
+        total = sum(points)
+        if total <= 0:
+            return None
+        return max(points) / total
+
+    def _get_stat_value_any(self, team: Dict, stat_names: List[str]) -> float:
+        stats = team.get('stats', [])
+        for name in stat_names:
+            for stat in stats:
+                if stat.get('name') == name:
+                    try:
+                        return float(stat.get('value', 0))
+                    except (TypeError, ValueError):
+                        return None
+        return None
 
     def _get_stat_value(self, team: Dict, stat_name: str) -> float:
         """Helper to get stat value."""

@@ -194,6 +194,21 @@ td {
   color: #7be0a8;
 }
 
+/* Upset column */
+.col-upset {
+  white-space: nowrap;
+}
+
+.badge--upset {
+  color: #f5c542;
+  background: rgba(245, 197, 66, 0.12);
+  border-color: rgba(245, 197, 66, 0.3);
+}
+
+.badge--no-upset {
+  color: var(--muted);
+}
+
 /* Injury column */
 .col-injury {
   white-space: nowrap;

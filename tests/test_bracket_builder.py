@@ -113,6 +113,34 @@ class TestBracketBuilderCalibration(unittest.TestCase):
 
         self.assertLessEqual(prediction['metrics']['winProbability'], 0.82)
 
+    def test_high_upset_risk_can_flip_close_favorite(self):
+        prediction = {
+            'predictedWinner': {
+                'id': 'seed6-id',
+                'name': 'Seed 6',
+                'winProbability': 0.56,
+            },
+            'metrics': {
+                'winProbability': 0.56,
+                'method': 'api-analysis (team stats + player matchups + rankings)',
+                'keyDrivers': ['Pick: Seed 6 projects at 56.0%'],
+                'upsetRisk': {
+                    'favorite': 'Seed 6',
+                    'underdog': 'Seed 11',
+                    'score': 78,
+                    'pressure': 0.43,
+                    'signals': ['Seed 11 travels better'],
+                },
+            },
+        }
+        team_a = {'id': 'seed6-id', 'name': 'Seed 6', 'seed': 6}
+        team_b = {'id': 'seed11-id', 'name': 'Seed 11', 'seed': 11}
+
+        self.builder._calibrate_api_prediction(prediction, team_a, team_b)
+
+        self.assertEqual(prediction['predictedWinner']['name'], 'Seed 11')
+        self.assertIn('upsetRiskAdjustment', prediction['metrics'])
+
     def test_norm_strips_parentheses_and_punctuation(self):
         self.assertEqual(self.builder._norm('Miami (OH)'), 'miami oh')
         self.assertEqual(self.builder._norm("St. John's"), 'st johns')

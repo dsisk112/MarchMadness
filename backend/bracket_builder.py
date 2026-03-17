@@ -452,6 +452,29 @@ class BracketBuilder:
                 seed_prob_a - max_distance,
                 min(seed_prob_a + max_distance, calibrated_prob_a),
             )
+            # Guaranteed base nudge toward upset direction for every classic upset band matchup
+            band_push = 0.04
+            if seed_a <= seed_b:
+                calibrated_prob_a = max(0.01, min(0.99, calibrated_prob_a - band_push))
+            else:
+                calibrated_prob_a = max(0.01, min(0.99, calibrated_prob_a + band_push))
+            metrics["classicBandPush"] = band_push
+
+        # Stats-based upset risk push — direction is always toward the higher-numbered seed winning
+        upset_risk = metrics.get("upsetRisk") if isinstance(metrics.get("upsetRisk"), dict) else {}
+        risk_score = float(upset_risk.get("score", 0) or 0)
+        risk_pressure = float(upset_risk.get("pressure", 0) or 0)
+
+        if risk_score >= 30:
+            risk_eligible = (abs(calibrated_prob_a - 0.5) <= 0.14) or self._is_classic_upset_band(seed_a, seed_b)
+            if risk_eligible:
+                upset_push = max(0.02, min(0.12, risk_pressure * 0.55))
+                # Always push toward the upset: higher-numbered seed winning
+                if seed_a <= seed_b:
+                    calibrated_prob_a = max(0.01, min(0.99, calibrated_prob_a - upset_push))
+                else:
+                    calibrated_prob_a = max(0.01, min(0.99, calibrated_prob_a + upset_push))
+                metrics["upsetRiskAdjustment"] = round(upset_push, 3)
 
         calibrated_winner_is_a = calibrated_prob_a >= 0.5
         calibrated_winner_prob = calibrated_prob_a if calibrated_winner_is_a else (1 - calibrated_prob_a)
@@ -491,6 +514,14 @@ class BracketBuilder:
                 drivers.append(
                     "Close-game anchor: leaned toward historical seed outcomes in near coin-flip matchup"
                 )
+        if metrics.get("upsetRiskAdjustment"):
+            drivers.append(
+                f"Upset-risk nudge: high-risk profile reduced favorite confidence by {metrics['upsetRiskAdjustment']:.1%}"
+            )
+        if metrics.get("classicBandPush") and not metrics.get("upsetRiskAdjustment"):
+            drivers.append(
+                f"Classic band: #{min(seed_a, seed_b)} vs #{max(seed_a, seed_b)} always carries elevated upset pressure"
+            )
         metrics["keyDrivers"] = drivers[:4]
 
     @staticmethod
