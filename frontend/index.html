@@ -13,8 +13,9 @@
         <h1>2026 NCAA Tournament Bracket</h1>
         <p class="subtitle">Browse each round, see AI projections, and highlight predicted winners.</p>
       </div>
-      <div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="button" id="refreshButton">Refresh predictions</button>
+        <button class="button button--scores" id="scoresButton">Update Scores</button>
       </div>
     </header>
 
@@ -27,23 +28,26 @@
   <script>
     const apiBase = 'http://127.0.0.1:5000';
     let bracketData = null;
+    let scoreData = null;  // team_id -> {score, winner, completed, ...}
     let activeRoundIndex = 0;
 
     const $status = document.getElementById('status');
     const $tabs = document.getElementById('roundTabs');
     const $roundContent = document.getElementById('roundContent');
     const $refresh = document.getElementById('refreshButton');
+    const $scores = document.getElementById('scoresButton');
 
     function setStatus(text, isError = false) {
       $status.textContent = text;
       $status.className = isError ? 'status error' : 'status';
     }
 
-    async function loadBracket() {
-      setStatus('Loading bracket...');
+    async function loadBracket(refresh = false) {
+      setStatus(refresh ? 'Refreshing from APIs...' : 'Loading bracket from cache...');
       try {
+        const refreshParam = refresh ? '&refresh=true' : '';
         const response = await fetch(
-          `${apiBase}/api/bracket?season=2026&start=2026-03-16&end=2026-03-20&t=${Date.now()}`,
+          `${apiBase}/api/bracket?season=2026&start=2026-03-16&end=2026-03-20${refreshParam}&t=${Date.now()}`,
           { cache: 'no-store' }
         );
         const data = await response.json();
@@ -80,6 +84,32 @@
       });
     }
 
+    async function loadScores() {
+      setStatus('Fetching live scores...');
+      $scores.disabled = true;
+      $scores.textContent = 'Updating...';
+      try {
+        const response = await fetch(
+          `${apiBase}/api/scores?season=2026&start=2026-03-16&end=2026-03-20&t=${Date.now()}`,
+          { cache: 'no-store' }
+        );
+        const data = await response.json();
+        if (data.error) {
+          setStatus(`Score error: ${data.error}`, true);
+          return;
+        }
+        scoreData = data.games || [];
+        renderActiveRound();
+        const completed = scoreData.filter(g => g.completed).length;
+        setStatus(`Scores updated. ${completed} game(s) final.`);
+      } catch (err) {
+        setStatus(`Error fetching scores: ${err.message}`, true);
+      } finally {
+        $scores.disabled = false;
+        $scores.textContent = 'Update Scores';
+      }
+    }
+
     function formatTeamCell(team) {
       if (!team) return 'TBD';
       const seed = team.seed ? `<span class="badge badge--seed">${team.seed}</span>` : '';
@@ -102,7 +132,47 @@
       const winner = matchup.predictedWinner?.name || '?';
       return `<span class="win-pct">${pct}%</span>`;
     }
+    function formatScoreCell(matchup) {
+      if (!scoreData || !scoreData.length) return '<span class="score-none">\u2014</span>';
+      const aId = String(matchup.teamA?.id || '');
+      const bId = String(matchup.teamB?.id || '');
+      if (!aId || !bId) return '<span class="score-none">\u2014</span>';
 
+      // Find the game where both teams from this matchup appear
+      const game = scoreData.find(g => g.teams[aId] && g.teams[bId]);
+      if (!game) return '<span class="score-none">\u2014</span>';
+
+      const aInfo = game.teams[aId];
+      const bInfo = game.teams[bId];
+      const aVal = aInfo.score ?? '\u2014';
+      const bVal = bInfo.score ?? '\u2014';
+      const completed = game.completed;
+      const state = game.gameState || 'pre';
+      const detail = game.detail || '';
+
+      const aWon = completed && aInfo.winner === true;
+      const bWon = completed && bInfo.winner === true;
+      const aName = matchup.teamA?.name || '?';
+      const bName = matchup.teamB?.name || '?';
+
+      let stateLabel, stateCls;
+      if (completed) {
+        stateLabel = 'Final';
+        stateCls = 'score-final';
+      } else if (state === 'in') {
+        stateLabel = detail || 'Live';
+        stateCls = 'score-live';
+      } else {
+        stateLabel = detail || 'Scheduled';
+        stateCls = 'score-pre';
+      }
+
+      return `<div class="score-box ${stateCls}">`
+        + `<span class="score-line ${aWon ? 'score-winner' : ''}">${aName} <strong>${aVal}</strong></span>`
+        + `<span class="score-line ${bWon ? 'score-winner' : ''}">${bName} <strong>${bVal}</strong></span>`
+        + `<span class="score-state">${stateLabel}</span>`
+        + `</div>`;
+    }
     function formatInjuryCell(matchup) {
       const metrics = matchup.metrics || {};
       const a = metrics.injuriesTeamA;
@@ -247,11 +317,13 @@
         const winProb = formatWinProb(matchup);
         const upset = formatUpsetCell(matchup);
         const injuries = formatInjuryCell(matchup);
+        const score = formatScoreCell(matchup);
 
         return `
           <tr>
             <td class="${aIsWinner ? 'winner' : ''}">${formatTeamCell(matchup.teamA)}</td>
             <td class="${bIsWinner ? 'winner' : ''}">${formatTeamCell(matchup.teamB)}</td>
+            <td class="col-score">${score}</td>
             <td class="col-prob">${winProb}</td>
             <td class="col-upset">${upset}</td>
             <td class="col-injury">${injuries}</td>
@@ -270,6 +342,7 @@
                 <tr>
                   <th>Team A</th>
                   <th>Team B</th>
+                  <th>Score</th>
                   <th>Win %</th>
                   <th>Signals</th>
                   <th>Injuries</th>
@@ -292,7 +365,8 @@
       `;
     }
 
-    $refresh.addEventListener('click', () => loadBracket());
+    $refresh.addEventListener('click', () => loadBracket(true));
+    $scores.addEventListener('click', () => loadScores());
 
     loadBracket();
   </script>

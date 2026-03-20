@@ -80,6 +80,71 @@ p.subtitle {
   transform: translateY(0);
 }
 
+.button--scores {
+  background: linear-gradient(135deg, #f5c542, #ffb347);
+}
+
+/* Score column */
+.col-score {
+  white-space: nowrap;
+  min-width: 130px;
+}
+
+.score-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+}
+
+.score-line {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.score-line strong {
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.score-winner {
+  color: #7be0a8;
+}
+
+.score-winner strong {
+  color: #7be0a8;
+}
+
+.score-state {
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.score-final .score-state {
+  color: var(--muted);
+}
+
+.score-live .score-state {
+  color: #ff8a8a;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.score-pre .score-state {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.score-none {
+  color: var(--muted);
+  opacity: 0.4;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .tabs {
   display: flex;
   flex-wrap: wrap;

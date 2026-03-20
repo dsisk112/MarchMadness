@@ -25,6 +25,7 @@ class MBBAPIClient:
         # Caching setup
         self.cache_dir = os.path.join(os.path.dirname(__file__), '..', 'cache')
         os.makedirs(self.cache_dir, exist_ok=True)
+        self.force_refresh = False
 
     def _get_cache_path(self, endpoint: str, params: Dict[str, Any]) -> str:
         """Generate cache file path based on endpoint and params."""
@@ -33,13 +34,15 @@ class MBBAPIClient:
         return os.path.join(self.cache_dir, filename)
 
     def _load_cache(self, cache_path: str) -> Optional[Dict]:
-        """Load data from cache if exists and not expired."""
+        """Load data from cache if exists."""
         if os.path.exists(cache_path):
-            with open(cache_path, 'r') as f:
-                cached_data = json.load(f)
-                # Simple expiration check (24 hours)
-                if datetime.now().timestamp() - cached_data.get('timestamp', 0) < 86400:
+            try:
+                with open(cache_path, 'r') as f:
+                    cached_data = json.load(f)
                     return cached_data['data']
+            except (json.JSONDecodeError, KeyError) as e:
+                print(f"Cache corrupted ({os.path.basename(cache_path)}): {e} — deleting and re-fetching")
+                os.remove(cache_path)
         return None
 
     def _save_cache(self, cache_path: str, data: Dict):
@@ -52,11 +55,12 @@ class MBBAPIClient:
             json.dump(cache_data, f)
 
     def _make_request(self, endpoint: str, params: Dict[str, Any]) -> Dict:
-        """Make API request with caching."""
+        """Make API request with caching. Skips cache when force_refresh is set."""
         cache_path = self._get_cache_path(endpoint, params)
-        cached = self._load_cache(cache_path)
-        if cached:
-            return cached
+        if not self.force_refresh:
+            cached = self._load_cache(cache_path)
+            if cached:
+                return cached
 
         import time
         url = f"{self.base_url}/{endpoint}"
@@ -131,7 +135,9 @@ class MBBAPIClient:
                 )
 
                 date_key = current_date.strftime('%Y%m%d')
-                day_data = scoreboard.get('data', {}).get(date_key, {})
+                # Handle both raw API shape {"data":{"YYYYMMDD":...}}
+                # and cached shape {"YYYYMMDD":...}
+                day_data = scoreboard.get('data', scoreboard).get(date_key, {})
 
                 for game in day_data.get('games', []):
                     # Post-season (type=3) or tournament-type games
